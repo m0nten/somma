@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="assets/somma_white.svg" width="230" alt="Project Logo">
+    <img src="assets/somma_white.svg" width="262" alt="Project Logo">
     <p align="center"><b>linear algebra primitives for rust</b></p>
 </p>
 
