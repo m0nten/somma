@@ -1,3 +1,4 @@
 // SOMMA //
 
-pub mod dot;
+pub mod dot32;
+pub mod dot64;
