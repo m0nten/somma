@@ -38,26 +38,6 @@ pub unsafe fn dot_avx2(x: &[f32], y: &[f32]) -> f32 {
         i += 32;
     }
 
-    if i + 32 <= len {
-        let x0 = unsafe { _mm256_loadu_ps(ptr_x.add(i)) };
-        let y0 = unsafe { _mm256_loadu_ps(ptr_y.add(i)) };
-        acc0 = _mm256_fmadd_ps(x0, y0, acc0);
-
-        let x1 = unsafe { _mm256_loadu_ps(ptr_x.add(i + 8)) };
-        let y1 = unsafe { _mm256_loadu_ps(ptr_y.add(i + 8)) };
-        acc1 = _mm256_fmadd_ps(x1, y1, acc1);
-
-        let x2 = unsafe { _mm256_loadu_ps(ptr_x.add(i + 16)) };
-        let y2 = unsafe { _mm256_loadu_ps(ptr_y.add(i + 16)) };
-        acc2 = _mm256_fmadd_ps(x2, y2, acc2);
-
-        let x3 = unsafe { _mm256_loadu_ps(ptr_x.add(i + 24)) };
-        let y3 = unsafe { _mm256_loadu_ps(ptr_y.add(i + 24)) };
-        acc3 = _mm256_fmadd_ps(x3, y3, acc3);
-
-        i += 32;
-    }
-
     if i + 16 <= len {
         let x0 = unsafe { _mm256_loadu_ps(ptr_x.add(i)) };
         let y0 = unsafe { _mm256_loadu_ps(ptr_y.add(i)) };
@@ -86,8 +66,11 @@ pub unsafe fn dot_avx2(x: &[f32], y: &[f32]) -> f32 {
     let s2 = _mm256_castps256_ps128(acc);
     let sum128 = _mm_add_ps(s1, s2);
 
-    let sum = _mm_hadd_ps(sum128, sum128);
-    let sum = _mm_hadd_ps(sum, sum);
+    let iv64 = _mm_movehl_ps(sum128, sum128);
+    let sum64 = _mm_add_ps(sum128, iv64);
+    let shuf64 = _mm_shuffle_ps(sum64, sum64, 0x1);
+    let sum = _mm_add_ps(sum64, shuf64);
+
     let mut sum = _mm_cvtss_f32(sum);
 
     while i < len {
