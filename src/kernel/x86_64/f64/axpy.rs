@@ -5,7 +5,7 @@ use rayon::{
 use std::arch::x86_64::{_mm256_fmadd_pd, _mm256_loadu_pd, _mm256_set1_pd, _mm256_storeu_pd};
 
 /// # Safety
-/// This functon have custom SIMD construction.
+/// Only on devices that support AVX2 and FMA.
 #[target_feature(enable = "avx2", enable = "fma")]
 pub unsafe fn par_axpy_avx2(y: &mut [f64], x: &[f64], a: f64, chunk_size: usize) {
     assert_eq!(x.len(), y.len());
@@ -13,7 +13,7 @@ pub unsafe fn par_axpy_avx2(y: &mut [f64], x: &[f64], a: f64, chunk_size: usize)
 }
 
 /// # Safety
-/// This functon have custom SIMD construction.
+/// Only on devices that support AVX2 and FMA.
 #[target_feature(enable = "avx2", enable = "fma")]
 pub unsafe fn axpy_avx2(y: &mut [f64], x: &[f64], a: f64) {
     assert_eq!(x.len(), y.len());

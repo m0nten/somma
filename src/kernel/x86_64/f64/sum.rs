@@ -3,14 +3,14 @@ use rayon::slice::ParallelSlice;
 use std::arch::x86_64::*;
 
 /// # Safety
-/// This functon have custom SIMD construction.
+/// Only on devices that support AVX2.
 #[target_feature(enable = "avx2")]
 pub unsafe fn par_sum_avx2(x: &[f64], chunk_size: usize) -> f64 {
     x.par_chunks(chunk_size).map(|x| unsafe { sum_avx2(x) }).sum()
 }
 
 /// # Safety
-/// This functon have custom SIMD construction.
+/// Only on devices that support AVX2.
 #[target_feature(enable = "avx2")]
 pub unsafe fn sum_avx2(x: &[f64]) -> f64 {
     let len = x.len();

@@ -3,8 +3,7 @@ use rayon::slice::ParallelSlice;
 use std::arch::x86_64::*;
 
 /// # Safety
-/// This functon have custom SIMD construction.
-/// The length of vector X and the length of vector Y must not differ.
+/// Only on devices that support AVX2 and FMA.
 #[target_feature(enable = "avx2", enable = "fma")]
 pub unsafe fn par_dot_avx2(x: &[f32], y: &[f32], chunk_size: usize) -> f32 {
     assert_eq!(x.len(), y.len());
@@ -12,8 +11,7 @@ pub unsafe fn par_dot_avx2(x: &[f32], y: &[f32], chunk_size: usize) -> f32 {
 }
 
 /// # Safety
-/// This functon have custom SIMD construction.
-/// The length of vector X and the length of vector Y must not differ.
+/// Only on devices that support AVX2 and FMA.
 #[target_feature(enable = "avx2", enable = "fma")]
 pub unsafe fn dot_avx2(x: &[f32], y: &[f32]) -> f32 {
     assert_eq!(x.len(), y.len());

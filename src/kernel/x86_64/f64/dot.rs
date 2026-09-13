@@ -5,8 +5,7 @@ use rayon::{
 use std::arch::x86_64::*;
 
 /// # Safety
-/// This functon have custom SIMD construction.
-/// The length of vector X and the length of vector Y must not differ.
+/// Only on devices that support AVX2 and FMA.
 #[target_feature(enable = "avx2", enable = "fma")]
 pub unsafe fn par_dot_avx2(x: &[f64], y: &[f64], chunk_size: usize) -> f64 {
     assert_eq!(x.len(), y.len());
@@ -14,8 +13,7 @@ pub unsafe fn par_dot_avx2(x: &[f64], y: &[f64], chunk_size: usize) -> f64 {
 }
 
 /// # Safety
-/// This functon have custom SIMD construction.
-/// The length of vector X and the length of vector Y must not differ.
+/// Only on devices that support AVX2 and FMA.
 #[target_feature(enable = "avx2", enable = "fma")]
 pub unsafe fn dot_avx2(x: &[f64], y: &[f64]) -> f64 {
     assert_eq!(x.len(), y.len());
