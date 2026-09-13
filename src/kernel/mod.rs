@@ -1,5 +1,7 @@
 pub(crate) mod dot32;
 pub(crate) mod dot64;
+pub(crate) mod scal32;
+pub(crate) mod scal64;
 pub(crate) mod sum32;
 pub(crate) mod sum64;
 
