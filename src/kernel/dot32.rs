@@ -3,8 +3,6 @@ use rayon::slice::ParallelSlice;
 use std::arch::x86_64::*;
 use std::ops::Mul;
 
-pub const DEFAULT_DOT32_CHUNK: usize = 16 * 1024;
-
 /// # Safety
 /// This functon have custom SIMD construction.
 /// The length of vector X and the length of vector Y must not differ.
