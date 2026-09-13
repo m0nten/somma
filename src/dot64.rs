@@ -1,5 +1,8 @@
+use rayon::{
+    iter::{IndexedParallelIterator, ParallelIterator},
+    slice::ParallelSlice,
+};
 use std::{arch::x86_64::*, ops::Mul};
-use rayon::{iter::{IndexedParallelIterator, ParallelIterator}, slice::ParallelSlice};
 
 /// # Safety
 /// This functon have custom SIMD construction.
@@ -18,7 +21,7 @@ pub fn par_dot_scalar(x: &[f64], y: &[f64], chunk_size: usize) -> f64 {
 /// This functon have custom SIMD construction.
 /// The length of vector X and the length of vector Y must not differ.
 #[target_feature(enable = "avx2", enable = "fma")]
-pub unsafe fn dot_avx2(x: &[f64], y: &[f64]) -> f64  {
+pub unsafe fn dot_avx2(x: &[f64], y: &[f64]) -> f64 {
     assert_eq!(x.len(), y.len());
 
     let len = x.len();
