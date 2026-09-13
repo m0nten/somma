@@ -1,4 +1,3 @@
 // SOMMA //
 
-pub mod dot32;
-pub mod dot64;
+pub mod kernel;
