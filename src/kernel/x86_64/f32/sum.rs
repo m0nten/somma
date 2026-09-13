@@ -9,11 +9,6 @@ pub unsafe fn par_sum_avx2(x: &[f32], chunk_size: usize) -> f32 {
     x.par_chunks(chunk_size).map(|x| unsafe { sum_avx2(x) }).sum()
 }
 
-#[inline(always)]
-pub fn par_sum(x: &[f32], chunk_size: usize) -> f32 {
-    x.par_chunks(chunk_size).map(sum).sum()
-}
-
 /// # Safety
 /// This functon have custom SIMD construction.
 #[target_feature(enable = "avx2")]
@@ -59,33 +54,6 @@ pub unsafe fn sum_avx2(x: &[f32]) -> f32 {
     while i < len {
         unsafe { sum += *ptr_x.add(i) };
         i += 1;
-    }
-
-    sum
-}
-
-#[inline(always)]
-pub fn sum(x: &[f32]) -> f32 {
-    let mut x = x;
-    let (mut acc0, mut acc1, mut acc2, mut acc3, mut acc4, mut acc5, mut acc6, mut acc7) = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-
-    while x.len() >= 8 {
-        acc0 += x[0];
-        acc1 += x[1];
-        acc2 += x[2];
-        acc3 += x[3];
-        acc4 += x[4];
-        acc5 += x[5];
-        acc6 += x[6];
-        acc7 += x[7];
-
-        x = &x[8..];
-    }
-
-    let mut sum = (acc0 + acc4) + (acc1 + acc5) + (acc2 + acc6) + (acc3 + acc7);
-
-    for x in x.iter() {
-        sum += x;
     }
 
     sum

@@ -2,7 +2,7 @@ use rayon::{
     iter::{IndexedParallelIterator, ParallelIterator},
     slice::ParallelSlice,
 };
-use std::{arch::x86_64::*, ops::Mul};
+use std::arch::x86_64::*;
 
 /// # Safety
 /// This functon have custom SIMD construction.
@@ -11,12 +11,6 @@ use std::{arch::x86_64::*, ops::Mul};
 pub unsafe fn par_dot_avx2(x: &[f64], y: &[f64], chunk_size: usize) -> f64 {
     assert_eq!(x.len(), y.len());
     x.par_chunks(chunk_size).zip(y.par_chunks(chunk_size)).map(|(x, y)| unsafe { dot_avx2(x, y) }).sum()
-}
-
-#[inline(always)]
-pub fn par_dot_scalar(x: &[f64], y: &[f64], chunk_size: usize) -> f64 {
-    assert_eq!(x.len(), y.len());
-    x.par_chunks(chunk_size).zip(y.par_chunks(chunk_size)).map(|(x, y)| dot_scalar(x, y)).sum()
 }
 
 /// # Safety
@@ -109,38 +103,6 @@ pub unsafe fn dot_avx2(x: &[f64], y: &[f64]) -> f64 {
     while i < len {
         sum += unsafe { *ptr_x.add(i) } * unsafe { *ptr_y.add(i) };
         i += 1;
-    }
-
-    sum
-}
-
-#[inline(always)]
-pub fn dot_scalar(x: &[f64], y: &[f64]) -> f64 {
-    assert_eq!(x.len(), y.len());
-
-    let mut x = x;
-    let mut y = y;
-
-    let (mut acc0, mut acc1, mut acc2, mut acc3, mut acc4, mut acc5, mut acc6, mut acc7) = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-
-    while x.len() >= 8 {
-        acc0 += x[0].mul(y[0]);
-        acc1 += x[1].mul(y[1]);
-        acc2 += x[2].mul(y[2]);
-        acc3 += x[3].mul(y[3]);
-        acc4 += x[4].mul(y[4]);
-        acc5 += x[5].mul(y[5]);
-        acc6 += x[6].mul(y[6]);
-        acc7 += x[7].mul(y[7]);
-
-        x = &x[8..];
-        y = &y[8..];
-    }
-
-    let mut sum = (acc0 + acc4) + (acc1 + acc5) + (acc2 + acc6) + (acc3 + acc7);
-
-    for (x, y) in x.iter().zip(y) {
-        sum += x.mul(y);
     }
 
     sum
