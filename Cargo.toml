@@ -10,3 +10,4 @@ keywords = ["somma", "ml", "rust"]
 categories = ["science"]
 
 [dependencies]
+rayon = "1.1"
