@@ -56,19 +56,7 @@ pub unsafe fn dot_avx2(x: &[f32], y: &[f32]) -> f32 {
         i += 32;
     }
 
-    if i + 16 <= len {
-        let x0 = unsafe { _mm256_loadu_ps(ptr_x.add(i)) };
-        let y0 = unsafe { _mm256_loadu_ps(ptr_y.add(i)) };
-        acc0 = _mm256_fmadd_ps(x0, y0, acc0);
-
-        let x1 = unsafe { _mm256_loadu_ps(ptr_x.add(i + 8)) };
-        let y1 = unsafe { _mm256_loadu_ps(ptr_y.add(i + 8)) };
-        acc1 = _mm256_fmadd_ps(x1, y1, acc1);
-
-        i += 16;
-    }
-
-    if i + 8 <= len {
+    while i + 8 <= len {
         let x0 = unsafe { _mm256_loadu_ps(ptr_x.add(i)) };
         let y0 = unsafe { _mm256_loadu_ps(ptr_y.add(i)) };
         acc0 = _mm256_fmadd_ps(x0, y0, acc0);

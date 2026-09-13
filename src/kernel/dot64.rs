@@ -77,27 +77,7 @@ pub unsafe fn dot_avx2(x: &[f64], y: &[f64]) -> f64 {
         i += 32;
     }
 
-    if i + 16 <= len {
-        let part_x = unsafe { _mm256_loadu_pd(ptr_x.add(i)) };
-        let part_y = unsafe { _mm256_loadu_pd(ptr_y.add(i)) };
-        acc0 = _mm256_fmadd_pd(part_x, part_y, acc0);
-
-        let part_x = unsafe { _mm256_loadu_pd(ptr_x.add(i + 4)) };
-        let part_y = unsafe { _mm256_loadu_pd(ptr_y.add(i + 4)) };
-        acc1 = _mm256_fmadd_pd(part_x, part_y, acc1);
-
-        let part_x = unsafe { _mm256_loadu_pd(ptr_x.add(i + 8)) };
-        let part_y = unsafe { _mm256_loadu_pd(ptr_y.add(i + 8)) };
-        acc2 = _mm256_fmadd_pd(part_x, part_y, acc2);
-
-        let part_x = unsafe { _mm256_loadu_pd(ptr_x.add(i + 12)) };
-        let part_y = unsafe { _mm256_loadu_pd(ptr_y.add(i + 12)) };
-        acc3 = _mm256_fmadd_pd(part_x, part_y, acc3);
-
-        i += 16;
-    }
-
-    if i + 8 <= len {
+    while i + 8 <= len {
         let part_x = unsafe { _mm256_loadu_pd(ptr_x.add(i)) };
         let part_y = unsafe { _mm256_loadu_pd(ptr_y.add(i)) };
         acc0 = _mm256_fmadd_pd(part_x, part_y, acc0);
