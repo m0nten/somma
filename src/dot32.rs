@@ -10,11 +10,13 @@ pub const DEFAULT_DOT32_CHUNK: usize = 16 * 1024;
 /// The length of vector X and the length of vector Y must not differ.
 #[target_feature(enable = "avx2", enable = "fma")]
 pub unsafe fn par_dot_avx2(x: &[f32], y: &[f32], chunk_size: usize) -> f32 {
+    assert_eq!(x.len(), y.len());
     x.par_chunks(chunk_size).zip(y.par_chunks(chunk_size)).map(|(x, y)| unsafe { dot_avx2(x, y) }).sum()
 }
 
 #[inline(always)]
 pub fn par_dot_scalar(x: &[f32], y: &[f32], chunk_size: usize) -> f32 {
+    assert_eq!(x.len(), y.len());
     x.par_chunks(chunk_size).zip(y.par_chunks(chunk_size)).map(|(x, y)| dot_scalar(x, y)).sum()
 }
 
