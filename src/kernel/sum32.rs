@@ -32,7 +32,7 @@ pub unsafe fn sum_avx2(x: &[f32]) -> f32 {
         acc0 = _mm256_add_ps(unsafe { _mm256_loadu_ps(ptr_x.add(i)) }, acc0);
         acc1 = _mm256_add_ps(unsafe { _mm256_loadu_ps(ptr_x.add(i + 8)) }, acc1);
         acc2 = _mm256_add_ps(unsafe { _mm256_loadu_ps(ptr_x.add(i + 16)) }, acc2);
-        acc3 = _mm256_add_ps(unsafe { _mm256_loadu_ps(ptr_x.add(i + 28)) }, acc3);
+        acc3 = _mm256_add_ps(unsafe { _mm256_loadu_ps(ptr_x.add(i + 24)) }, acc3);
 
         i += 32;
     }
