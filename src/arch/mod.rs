@@ -2,9 +2,7 @@
 pub use std::arch::x86_64::*;
 
 #[cfg(target_arch = "x86_64")]
-pub mod avx2fma;
-#[cfg(target_arch = "x86_64")]
-pub use avx2fma::Avx2Fma;
+pub mod avx2;
 
 pub unsafe trait SimdArch {
     unsafe fn setzero_m256_f32() -> M256MF32;
@@ -40,26 +38,32 @@ pub unsafe trait SimdArch {
     unsafe fn cvtss_f32(a: M128MF32) -> f32;
     unsafe fn npackhi_f64(a: M128MF64, b: M128MF64) -> M128MF64;
     unsafe fn cvtsd_f64(a: M128MF64) -> f64;
+    unsafe fn cast_m256f64_m128f64(a: M256MF64) -> M128MF64;
+    unsafe fn extract_m128_f64(a: M256MF64) -> M128MF64;
 }
 
+#[derive(Clone, Copy)]
 #[repr(transparent)]
 pub struct M256MF32 {
     #[cfg(target_arch = "x86_64")]
     pub mem: __m256,
 }
 
+#[derive(Clone, Copy)]
 #[repr(transparent)]
 pub struct M256MF64 {
     #[cfg(target_arch = "x86_64")]
     pub mem: __m256d,
 }
 
+#[derive(Clone, Copy)]
 #[repr(transparent)]
 pub struct M128MF32 {
     #[cfg(target_arch = "x86_64")]
     pub mem: __m128,
 }
 
+#[derive(Clone, Copy)]
 #[repr(transparent)]
 pub struct M128MF64 {
     #[cfg(target_arch = "x86_64")]
