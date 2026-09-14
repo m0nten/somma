@@ -10,6 +10,11 @@ pub unsafe trait SimdArch {
     unsafe fn setzero_m128_f32() -> M128MF32;
     unsafe fn setzero_m128_f64() -> M128MF64;
 
+    unsafe fn set1_m256_f32(a: f32) -> M256MF32;
+    unsafe fn set1_m256_f64(a: f64) -> M256MF64;
+    unsafe fn set1_m128_f32(a: f32) -> M128MF32;
+    unsafe fn set1_m128_f64(a: f64) -> M128MF64;
+
     unsafe fn loadu_m256_f32(mem: *const f32) -> M256MF32;
     unsafe fn loadu_m256_f64(mem: *const f64) -> M256MF64;
     unsafe fn loadu_m128_f32(mem: *const f32) -> M128MF32;

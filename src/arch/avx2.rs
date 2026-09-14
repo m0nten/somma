@@ -7,6 +7,26 @@ pub struct Avx2;
 
 unsafe impl SimdArch for Avx2 {
     #[inline(always)]
+    unsafe fn set1_m256_f32(a: f32) -> M256MF32 {
+        unsafe { M256MF32 { mem: _mm256_set1_ps(a) } }
+    }
+
+    #[inline(always)]
+    unsafe fn set1_m256_f64(a: f64) -> M256MF64 {
+        unsafe { M256MF64 { mem: _mm256_set1_pd(a) } }
+    }
+
+    #[inline(always)]
+    unsafe fn set1_m128_f32(a: f32) -> M128MF32 {
+        unsafe { M128MF32 { mem: _mm_set1_ps(a) } }
+    }
+
+    #[inline(always)]
+    unsafe fn set1_m128_f64(a: f64) -> M128MF64 {
+        unsafe { M128MF64 { mem: _mm_set1_pd(a) } }
+    }
+
+    #[inline(always)]
     unsafe fn extract_m128_f64(a: M256MF64) -> M128MF64 {
         M128MF64 {
             mem: unsafe { _mm256_extractf128_pd(a.mem, 1) },
