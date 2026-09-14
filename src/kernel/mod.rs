@@ -1,2 +1,3 @@
-pub mod scalar;
-pub mod x86_64;
+pub mod axpy;
+pub mod dot;
+pub mod sum;

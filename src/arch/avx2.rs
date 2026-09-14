@@ -185,7 +185,6 @@ unsafe impl SimdArch for Avx2 {
         }
     }
 
-    
     #[inline(always)]
     unsafe fn extract_m128_f32(a: M256MF32) -> M128MF32 {
         M128MF32 {
