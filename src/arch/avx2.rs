@@ -7,6 +7,16 @@ pub struct Avx2;
 
 unsafe impl SimdArch for Avx2 {
     #[inline(always)]
+    unsafe fn movehdup_f32(a: M128MF32) -> M128MF32 {
+        unsafe { M128MF32 { mem: _mm_movehdup_ps(a.mem) } }
+    }
+
+    #[inline(always)]
+    unsafe fn add_ss_f32(a: M128MF32, b: M128MF32) -> M128MF32 {
+        unsafe { M128MF32 { mem: _mm_add_ss(a.mem, b.mem) } }
+    }
+
+    #[inline(always)]
     unsafe fn set1_m256_f32(a: f32) -> M256MF32 {
         unsafe { M256MF32 { mem: _mm256_set1_ps(a) } }
     }
@@ -175,6 +185,7 @@ unsafe impl SimdArch for Avx2 {
         }
     }
 
+    
     #[inline(always)]
     unsafe fn extract_m128_f32(a: M256MF32) -> M128MF32 {
         M128MF32 {
