@@ -20,14 +20,14 @@ pub unsafe fn par_sum_f64<S: SimdArch>(x: &[f64], chunk_size: usize) -> f64 {
 /// # Safety
 /// The function uses SIMD.
 #[inline(always)]
-pub unsafe fn par_sum_avx2_f32<S: SimdArch>(x: &[f32], chunk_size: usize) -> f32 {
+pub unsafe fn par_sum_avx2_f32(x: &[f32], chunk_size: usize) -> f32 {
     x.par_chunks(chunk_size).map(|x| unsafe { sum_avx2_f32(x) }).sum()
 }
 
 /// # Safety
 /// The function uses SIMD.
 #[inline(always)]
-pub unsafe fn par_sum_avx2_f64<S: SimdArch>(x: &[f64], chunk_size: usize) -> f64 {
+pub unsafe fn par_sum_avx2_f64(x: &[f64], chunk_size: usize) -> f64 {
     x.par_chunks(chunk_size).map(|x| unsafe { sum_avx2_f64(x) }).sum()
 }
 

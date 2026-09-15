@@ -7,6 +7,127 @@ pub struct Avx2;
 
 unsafe impl SimdArch for Avx2 {
     #[inline(always)]
+    unsafe fn reduce_max_f32(a: M256MF32) -> f32 {
+        unsafe {
+            let hi = M128MF32 {
+                mem: _mm256_extractf128_ps(a.mem, 1),
+            };
+
+            let lo = M128MF32 {
+                mem: _mm256_castps256_ps128(a.mem),
+            };
+
+            let mut m = _mm_max_ps(lo.mem, hi.mem);
+
+            let t = _mm_movehl_ps(m, m);
+            m = _mm_max_ps(m, t);
+
+            let t = _mm_shuffle_ps::<0x01>(m, m);
+            m = _mm_max_ps(m, t);
+
+            _mm_cvtss_f32(m)
+        }
+    }
+
+    #[inline(always)]
+    unsafe fn reduce_max_f64(a: M256MF64) -> f64 {
+        unsafe {
+            let hi = _mm256_extractf128_pd(a.mem, 1);
+
+            let lo = _mm256_castpd256_pd128(a.mem);
+
+            let mut m = _mm_max_pd(lo, hi);
+
+            let t = _mm_shuffle_pd::<1>(m, m);
+            m = _mm_max_pd(m, t);
+
+            _mm_cvtsd_f64(m)
+        }
+    }
+
+    #[inline(always)]
+    unsafe fn abs_f32(a: M256MF32) -> M256MF32 {
+        unsafe {
+            let mask = _mm256_castsi256_ps(_mm256_set1_epi32(0x7fff_ffff));
+
+            M256MF32 { mem: _mm256_and_ps(a.mem, mask) }
+        }
+    }
+
+    #[inline(always)]
+    unsafe fn abs_f64(a: M256MF64) -> M256MF64 {
+        unsafe {
+            let mask = _mm256_castsi256_pd(_mm256_set1_epi64x(0x7fff_ffff_ffff_ffff));
+
+            M256MF64 { mem: _mm256_and_pd(a.mem, mask) }
+        }
+    }
+
+    unsafe fn and_f32(a: M256MF32, b: M256MF32) -> M256MF32 {
+        unsafe { M256MF32 { mem: _mm256_and_ps(a.mem, b.mem) } }
+    }
+
+    unsafe fn and_f64(a: M256MF64, b: M256MF64) -> M256MF64 {
+        unsafe { M256MF64 { mem: _mm256_and_pd(a.mem, b.mem) } }
+    }
+
+    unsafe fn and_m128_f32(a: M128MF32, b: M128MF32) -> M128MF32 {
+        unsafe { M128MF32 { mem: _mm_and_ps(a.mem, b.mem) } }
+    }
+
+    unsafe fn and_m128_f64(a: M128MF64, b: M128MF64) -> M128MF64 {
+        unsafe { M128MF64 { mem: _mm_and_pd(a.mem, b.mem) } }
+    }
+
+    unsafe fn max_f32(a: M256MF32, b: M256MF32) -> M256MF32 {
+        unsafe { M256MF32 { mem: _mm256_max_ps(a.mem, b.mem) } }
+    }
+
+    unsafe fn max_f64(a: M256MF64, b: M256MF64) -> M256MF64 {
+        unsafe { M256MF64 { mem: _mm256_max_pd(a.mem, b.mem) } }
+    }
+
+    unsafe fn max_m128_f32(a: M128MF32, b: M128MF32) -> M128MF32 {
+        unsafe { M128MF32 { mem: _mm_max_ps(a.mem, b.mem) } }
+    }
+
+    unsafe fn max_m128_f64(a: M128MF64, b: M128MF64) -> M128MF64 {
+        unsafe { M128MF64 { mem: _mm_max_pd(a.mem, b.mem) } }
+    }
+
+    unsafe fn div_f32(a: M256MF32, b: M256MF32) -> M256MF32 {
+        unsafe { M256MF32 { mem: _mm256_div_ps(a.mem, b.mem) } }
+    }
+
+    unsafe fn div_f64(a: M256MF64, b: M256MF64) -> M256MF64 {
+        unsafe { M256MF64 { mem: _mm256_div_pd(a.mem, b.mem) } }
+    }
+
+    unsafe fn div_m128_f32(a: M128MF32, b: M128MF32) -> M128MF32 {
+        unsafe { M128MF32 { mem: _mm_div_ps(a.mem, b.mem) } }
+    }
+
+    unsafe fn div_m128_f64(a: M128MF64, b: M128MF64) -> M128MF64 {
+        unsafe { M128MF64 { mem: _mm_div_pd(a.mem, b.mem) } }
+    }
+
+    unsafe fn mul_f32(a: M256MF32, b: M256MF32) -> M256MF32 {
+        unsafe { M256MF32 { mem: _mm256_mul_ps(a.mem, b.mem) } }
+    }
+
+    unsafe fn mul_f64(a: M256MF64, b: M256MF64) -> M256MF64 {
+        unsafe { M256MF64 { mem: _mm256_mul_pd(a.mem, b.mem) } }
+    }
+
+    unsafe fn mul_m128_f32(a: M128MF32, b: M128MF32) -> M128MF32 {
+        unsafe { M128MF32 { mem: _mm_mul_ps(a.mem, b.mem) } }
+    }
+
+    unsafe fn mul_m128_f64(a: M128MF64, b: M128MF64) -> M128MF64 {
+        unsafe { M128MF64 { mem: _mm_mul_pd(a.mem, b.mem) } }
+    }
+
+    #[inline(always)]
     unsafe fn movehdup_f32(a: M128MF32) -> M128MF32 {
         unsafe { M128MF32 { mem: _mm_movehdup_ps(a.mem) } }
     }

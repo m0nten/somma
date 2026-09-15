@@ -14,6 +14,126 @@ pub unsafe trait SimdArch {
     ///
     /// The caller must ensure that the CPU supports the SIMD instruction set
     /// required by the implementation.
+    unsafe fn abs_f32(a: M256MF32) -> M256MF32;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn abs_f64(a: M256MF64) -> M256MF64;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn reduce_max_f32(a: M256MF32) -> f32;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn reduce_max_f64(a: M256MF64) -> f64;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn and_f32(a: M256MF32, b: M256MF32) -> M256MF32;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn and_f64(a: M256MF64, b: M256MF64) -> M256MF64;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn and_m128_f32(a: M128MF32, b: M128MF32) -> M128MF32;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn and_m128_f64(a: M128MF64, b: M128MF64) -> M128MF64;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn max_f32(a: M256MF32, b: M256MF32) -> M256MF32;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn max_f64(a: M256MF64, b: M256MF64) -> M256MF64;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn max_m128_f32(a: M128MF32, b: M128MF32) -> M128MF32;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn max_m128_f64(a: M128MF64, b: M128MF64) -> M128MF64;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn div_f32(a: M256MF32, b: M256MF32) -> M256MF32;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn div_f64(a: M256MF64, b: M256MF64) -> M256MF64;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn div_m128_f32(a: M128MF32, b: M128MF32) -> M128MF32;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn div_m128_f64(a: M128MF64, b: M128MF64) -> M128MF64;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn mul_f32(a: M256MF32, b: M256MF32) -> M256MF32;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn mul_f64(a: M256MF64, b: M256MF64) -> M256MF64;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn mul_m128_f32(a: M128MF32, b: M128MF32) -> M128MF32;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
+    unsafe fn mul_m128_f64(a: M128MF64, b: M128MF64) -> M128MF64;
+
+    /// # Safety
+    ///
+    /// The caller must ensure that the CPU supports the SIMD instruction set
+    /// required by the implementation.
     unsafe fn setzero_m256_f32() -> M256MF32;
 
     /// # Safety

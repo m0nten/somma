@@ -192,7 +192,6 @@ pub unsafe fn dot_f64<S: SimdArch>(x: &[f64], y: &[f64]) -> f64 {
             i += 8;
         }
 
-        // Merge 8 accumulators.
         let acc0 = S::add_f64(acc0, acc1);
         let acc1 = S::add_f64(acc2, acc3);
         let acc2 = S::add_f64(acc4, acc5);
