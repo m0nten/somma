@@ -1,6 +1,8 @@
-use crate::arch::{avx2::Avx2, SimdArch};
+use crate::arch::{SimdArch, avx2::Avx2};
 use rayon::{iter::ParallelIterator, slice::ParallelSlice};
 
+/// # Safety
+/// The function uses SIMD.
 #[inline(always)]
 pub unsafe fn nrm2_f32<S: SimdArch>(x: &[f32]) -> f32 {
     unsafe {
@@ -12,6 +14,8 @@ pub unsafe fn nrm2_f32<S: SimdArch>(x: &[f32]) -> f32 {
     }
 }
 
+/// # Safety
+/// The function uses SIMD.
 #[inline(always)]
 pub unsafe fn nrm2_f64<S: SimdArch>(x: &[f64]) -> f64 {
     unsafe {
@@ -23,6 +27,8 @@ pub unsafe fn nrm2_f64<S: SimdArch>(x: &[f64]) -> f64 {
     }
 }
 
+/// # Safety
+/// The function uses SIMD.
 #[inline(always)]
 pub unsafe fn par_nrm2_f32<S: SimdArch>(x: &[f32], chunk_size: usize) -> f32 {
     if x.len() < 32_768 {
@@ -35,17 +41,17 @@ pub unsafe fn par_nrm2_f32<S: SimdArch>(x: &[f32], chunk_size: usize) -> f32 {
         .par_chunks(chunk_size)
         .map(|chunk| unsafe {
             let s = raw_scale_nrm2_f32::<S>(chunk);
-            if s == 0.0 {
-                (0.0f32, 0.0f32)
-            } else {
-                (s, raw_nrm2_f32::<S>(chunk, s))
-            }
+            if s == 0.0 { (0.0f32, 0.0f32) } else { (s, raw_nrm2_f32::<S>(chunk, s)) }
         })
         .reduce(
             || (0.0f32, 0.0f32),
             |(s1, sum1), (s2, sum2)| {
-                if s1 == 0.0 { return (s2, sum2); }
-                if s2 == 0.0 { return (s1, sum1); }
+                if s1 == 0.0 {
+                    return (s2, sum2);
+                }
+                if s2 == 0.0 {
+                    return (s1, sum1);
+                }
 
                 if s1 >= s2 {
                     let r = s2 / s1;
@@ -60,6 +66,8 @@ pub unsafe fn par_nrm2_f32<S: SimdArch>(x: &[f32], chunk_size: usize) -> f32 {
     scale * sq_sum.sqrt()
 }
 
+/// # Safety
+/// The function uses SIMD.
 #[inline(always)]
 pub unsafe fn par_nrm2_f64<S: SimdArch>(x: &[f64], chunk_size: usize) -> f64 {
     if x.len() < 32_768 {
@@ -72,17 +80,17 @@ pub unsafe fn par_nrm2_f64<S: SimdArch>(x: &[f64], chunk_size: usize) -> f64 {
         .par_chunks(chunk_size)
         .map(|chunk| unsafe {
             let s = raw_scale_nrm2_f64::<S>(chunk);
-            if s == 0.0 {
-                (0.0f64, 0.0f64)
-            } else {
-                (s, raw_nrm2_f64::<S>(chunk, s))
-            }
+            if s == 0.0 { (0.0f64, 0.0f64) } else { (s, raw_nrm2_f64::<S>(chunk, s)) }
         })
         .reduce(
             || (0.0f64, 0.0f64),
             |(s1, sum1), (s2, sum2)| {
-                if s1 == 0.0 { return (s2, sum2); }
-                if s2 == 0.0 { return (s1, sum1); }
+                if s1 == 0.0 {
+                    return (s2, sum2);
+                }
+                if s2 == 0.0 {
+                    return (s1, sum1);
+                }
 
                 if s1 >= s2 {
                     let r = s2 / s1;
@@ -97,27 +105,36 @@ pub unsafe fn par_nrm2_f64<S: SimdArch>(x: &[f64], chunk_size: usize) -> f64 {
     scale * sq_sum.sqrt()
 }
 
-// Вспомогательные функции с атрибутом target_feature для безопасного вызова внутри замыканий Rayon
+/// # Safety
+/// The function uses SIMD.
 #[target_feature(enable = "avx2", enable = "fma")]
 unsafe fn helper_scale_avx2_f32(chunk: &[f32]) -> f32 {
     unsafe { raw_scale_nrm2_f32::<Avx2>(chunk) }
 }
 
+/// # Safety
+/// The function uses SIMD.
 #[target_feature(enable = "avx2", enable = "fma")]
 unsafe fn helper_nrm2_avx2_f32(chunk: &[f32], scale: f32) -> f32 {
     unsafe { raw_nrm2_f32::<Avx2>(chunk, scale) }
 }
 
+/// # Safety
+/// The function uses SIMD.
 #[target_feature(enable = "avx2", enable = "fma")]
 unsafe fn helper_scale_avx2_f64(chunk: &[f64]) -> f64 {
     unsafe { raw_scale_nrm2_f64::<Avx2>(chunk) }
 }
 
+/// # Safety
+/// The function uses SIMD.
 #[target_feature(enable = "avx2", enable = "fma")]
 unsafe fn helper_nrm2_avx2_f64(chunk: &[f64], scale: f64) -> f64 {
     unsafe { raw_nrm2_f64::<Avx2>(chunk, scale) }
 }
 
+/// # Safety
+/// The function uses SIMD.
 #[target_feature(enable = "avx2", enable = "fma")]
 pub unsafe fn par_nrm2_avx2_f32(x: &[f32], chunk_size: usize) -> f32 {
     if x.len() < 32_768 {
@@ -130,17 +147,17 @@ pub unsafe fn par_nrm2_avx2_f32(x: &[f32], chunk_size: usize) -> f32 {
         .par_chunks(chunk_size)
         .map(|chunk| unsafe {
             let s = helper_scale_avx2_f32(chunk);
-            if s == 0.0 {
-                (0.0f32, 0.0f32)
-            } else {
-                (s, helper_nrm2_avx2_f32(chunk, s))
-            }
+            if s == 0.0 { (0.0f32, 0.0f32) } else { (s, helper_nrm2_avx2_f32(chunk, s)) }
         })
         .reduce(
             || (0.0f32, 0.0f32),
             |(s1, sum1), (s2, sum2)| {
-                if s1 == 0.0 { return (s2, sum2); }
-                if s2 == 0.0 { return (s1, sum1); }
+                if s1 == 0.0 {
+                    return (s2, sum2);
+                }
+                if s2 == 0.0 {
+                    return (s1, sum1);
+                }
 
                 if s1 >= s2 {
                     let r = s2 / s1;
@@ -155,6 +172,8 @@ pub unsafe fn par_nrm2_avx2_f32(x: &[f32], chunk_size: usize) -> f32 {
     scale * sq_sum.sqrt()
 }
 
+/// # Safety
+/// The function uses SIMD.
 #[target_feature(enable = "avx2", enable = "fma")]
 pub unsafe fn par_nrm2_avx2_f64(x: &[f64], chunk_size: usize) -> f64 {
     if x.len() < 32_768 {
@@ -167,17 +186,17 @@ pub unsafe fn par_nrm2_avx2_f64(x: &[f64], chunk_size: usize) -> f64 {
         .par_chunks(chunk_size)
         .map(|chunk| unsafe {
             let s = helper_scale_avx2_f64(chunk);
-            if s == 0.0 {
-                (0.0f64, 0.0f64)
-            } else {
-                (s, helper_nrm2_avx2_f64(chunk, s))
-            }
+            if s == 0.0 { (0.0f64, 0.0f64) } else { (s, helper_nrm2_avx2_f64(chunk, s)) }
         })
         .reduce(
             || (0.0f64, 0.0f64),
             |(s1, sum1), (s2, sum2)| {
-                if s1 == 0.0 { return (s2, sum2); }
-                if s2 == 0.0 { return (s1, sum1); }
+                if s1 == 0.0 {
+                    return (s2, sum2);
+                }
+                if s2 == 0.0 {
+                    return (s1, sum1);
+                }
 
                 if s1 >= s2 {
                     let r = s2 / s1;
@@ -192,16 +211,22 @@ pub unsafe fn par_nrm2_avx2_f64(x: &[f64], chunk_size: usize) -> f64 {
     scale * sq_sum.sqrt()
 }
 
+/// # Safety
+/// The function uses SIMD.
 #[target_feature(enable = "avx2", enable = "fma")]
 pub unsafe fn nrm2_avx2_f32(x: &[f32]) -> f32 {
     unsafe { nrm2_f32::<Avx2>(x) }
 }
 
+/// # Safety
+/// The function uses SIMD.
 #[target_feature(enable = "avx2", enable = "fma")]
 pub unsafe fn nrm2_avx2_f64(x: &[f64]) -> f64 {
     unsafe { nrm2_f64::<Avx2>(x) }
 }
 
+/// # Safety
+/// The function uses SIMD.
 #[inline(always)]
 unsafe fn raw_scale_nrm2_f32<S: SimdArch>(x: &[f32]) -> f32 {
     unsafe {
@@ -248,6 +273,8 @@ unsafe fn raw_scale_nrm2_f32<S: SimdArch>(x: &[f32]) -> f32 {
     }
 }
 
+/// # Safety
+/// The function uses SIMD.
 #[inline(always)]
 unsafe fn raw_scale_nrm2_f64<S: SimdArch>(x: &[f64]) -> f64 {
     unsafe {
@@ -315,6 +342,8 @@ unsafe fn raw_scale_nrm2_f64<S: SimdArch>(x: &[f64]) -> f64 {
     }
 }
 
+/// # Safety
+/// The function uses SIMD.
 #[inline(always)]
 unsafe fn raw_nrm2_f32<S: SimdArch>(x: &[f32], scale: f32) -> f32 {
     unsafe {
@@ -373,6 +402,8 @@ unsafe fn raw_nrm2_f32<S: SimdArch>(x: &[f32], scale: f32) -> f32 {
     }
 }
 
+/// # Safety
+/// The function uses SIMD.
 #[inline(always)]
 unsafe fn raw_nrm2_f64<S: SimdArch>(x: &[f64], scale: f64) -> f64 {
     unsafe {

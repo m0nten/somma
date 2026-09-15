@@ -118,52 +118,54 @@ pub unsafe fn axpy_f32<S: SimdArch>(y: &mut [f32], x: &[f32], a: f32) {
 /// # Safety
 /// Требует поддержки AVX2 и FMA на целевом процессоре.
 #[inline(always)]
-pub unsafe fn axpy_f64<S: SimdArch>(y: &mut [f64], x: &[f64], a: f64) { unsafe {
-    assert_eq!(x.len(), y.len());
+pub unsafe fn axpy_f64<S: SimdArch>(y: &mut [f64], x: &[f64], a: f64) {
+    unsafe {
+        assert_eq!(x.len(), y.len());
 
-    let len = y.len();
-    let var_a = S::set1_m256_f64(a);
-    let ptr_y = y.as_mut_ptr();
-    let ptr_x = x.as_ptr();
+        let len = y.len();
+        let var_a = S::set1_m256_f64(a);
+        let ptr_y = y.as_mut_ptr();
+        let ptr_x = x.as_ptr();
 
-    let mut i = 0;
-    // Развертка по 16 элементов (4 вектора по 4 f64) — помещается в 16 YMM-регистров
-    while i + 16 <= len {
-        let y0 = S::loadu_m256_f64(ptr_y.add(i));
-        let x0 = S::loadu_m256_f64(ptr_x.add(i));
-        let y1 = S::loadu_m256_f64(ptr_y.add(i + 4));
-        let x1 = S::loadu_m256_f64(ptr_x.add(i + 4));
-        let y2 = S::loadu_m256_f64(ptr_y.add(i + 8));
-        let x2 = S::loadu_m256_f64(ptr_x.add(i + 8));
-        let y3 = S::loadu_m256_f64(ptr_y.add(i + 12));
-        let x3 = S::loadu_m256_f64(ptr_x.add(i + 12));
+        let mut i = 0;
+        // Развертка по 16 элементов (4 вектора по 4 f64) — помещается в 16 YMM-регистров
+        while i + 16 <= len {
+            let y0 = S::loadu_m256_f64(ptr_y.add(i));
+            let x0 = S::loadu_m256_f64(ptr_x.add(i));
+            let y1 = S::loadu_m256_f64(ptr_y.add(i + 4));
+            let x1 = S::loadu_m256_f64(ptr_x.add(i + 4));
+            let y2 = S::loadu_m256_f64(ptr_y.add(i + 8));
+            let x2 = S::loadu_m256_f64(ptr_x.add(i + 8));
+            let y3 = S::loadu_m256_f64(ptr_y.add(i + 12));
+            let x3 = S::loadu_m256_f64(ptr_x.add(i + 12));
 
-        let v0 = S::fmadd_f64(x0, var_a, y0);
-        let v1 = S::fmadd_f64(x1, var_a, y1);
-        let v2 = S::fmadd_f64(x2, var_a, y2);
-        let v3 = S::fmadd_f64(x3, var_a, y3);
+            let v0 = S::fmadd_f64(x0, var_a, y0);
+            let v1 = S::fmadd_f64(x1, var_a, y1);
+            let v2 = S::fmadd_f64(x2, var_a, y2);
+            let v3 = S::fmadd_f64(x3, var_a, y3);
 
-        S::storeu_m256_f64(ptr_y.add(i), v0);
-        S::storeu_m256_f64(ptr_y.add(i + 4), v1);
-        S::storeu_m256_f64(ptr_y.add(i + 8), v2);
-        S::storeu_m256_f64(ptr_y.add(i + 12), v3);
+            S::storeu_m256_f64(ptr_y.add(i), v0);
+            S::storeu_m256_f64(ptr_y.add(i + 4), v1);
+            S::storeu_m256_f64(ptr_y.add(i + 8), v2);
+            S::storeu_m256_f64(ptr_y.add(i + 12), v3);
 
-        i += 16;
+            i += 16;
+        }
+
+        // Обработка 1 вектора (4 элемента)
+        while i + 4 <= len {
+            let y0 = S::loadu_m256_f64(ptr_y.add(i));
+            let x0 = S::loadu_m256_f64(ptr_x.add(i));
+            let v0 = S::fmadd_f64(x0, var_a, y0);
+            S::storeu_m256_f64(ptr_y.add(i), v0);
+
+            i += 4;
+        }
+
+        // Скалярный хвост (< 4 элементов)
+        while i < len {
+            y[i] += x[i] * a;
+            i += 1;
+        }
     }
-
-    // Обработка 1 вектора (4 элемента)
-    while i + 4 <= len {
-        let y0 = S::loadu_m256_f64(ptr_y.add(i));
-        let x0 = S::loadu_m256_f64(ptr_x.add(i));
-        let v0 = S::fmadd_f64(x0, var_a, y0);
-        S::storeu_m256_f64(ptr_y.add(i), v0);
-
-        i += 4;
-    }
-
-    // Скалярный хвост (< 4 элементов)
-    while i < len {
-        y[i] += x[i] * a;
-        i += 1;
-    }
-}}
+}

@@ -10,17 +10,17 @@ pub fn par_nrm2_f32(x: &[f32], chunk_size: usize) -> f32 {
                 scale = scale.max(ax.abs());
             }
 
-            if scale == 0.0 {
-                (0.0f32, 0.0f32)
-            } else {
-                (scale, raw_nrm2_f32(chunk, scale))
-            }
+            if scale == 0.0 { (0.0f32, 0.0f32) } else { (scale, raw_nrm2_f32(chunk, scale)) }
         })
         .reduce(
             || (0.0f32, 0.0f32),
             |(s1, sum1), (s2, sum2)| {
-                if s1 == 0.0 { return (s2, sum2); }
-                if s2 == 0.0 { return (s1, sum1); }
+                if s1 == 0.0 {
+                    return (s2, sum2);
+                }
+                if s2 == 0.0 {
+                    return (s1, sum1);
+                }
 
                 if s1 >= s2 {
                     let r = s2 / s1;
@@ -45,17 +45,17 @@ pub fn par_nrm2_f64(x: &[f64], chunk_size: usize) -> f64 {
                 scale = scale.max(ax.abs());
             }
 
-            if scale == 0.0 {
-                (0.0f64, 0.0f64)
-            } else {
-                (scale, raw_nrm2_f64(chunk, scale))
-            }
+            if scale == 0.0 { (0.0f64, 0.0f64) } else { (scale, raw_nrm2_f64(chunk, scale)) }
         })
         .reduce(
             || (0.0f64, 0.0f64),
             |(s1, sum1), (s2, sum2)| {
-                if s1 == 0.0 { return (s2, sum2); }
-                if s2 == 0.0 { return (s1, sum1); }
+                if s1 == 0.0 {
+                    return (s2, sum2);
+                }
+                if s2 == 0.0 {
+                    return (s1, sum1);
+                }
 
                 if s1 >= s2 {
                     let r = s2 / s1;
